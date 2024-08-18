@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Transfer</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      input[type="file"] {
+        margin-bottom: 10px;
+      }
+      input[type="submit"] {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      input[type="submit"]:hover {
+        background-color: #45a049;
+      }
+      #progressContainer {
+        width: 100%;
+        max-width: 400px;
+        margin-top: 10px;
+        display: none;
+        text-align: center;
+      }
+      #progressBar {
+        width: 100%;
+        background-color: #f3f3f3;
+        border: 1px solid #ccc;
+      }
+      #progressBar div {
+        width: 0%;
+        height: 20px;
+        background-color: #4caf50;
+      }
+      #progressText {
+        margin-top: 5px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Upload a File</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" name="file" id="fileInput" required />
+      <input type="submit" value="Upload" />
+    </form>
+    <div id="progressContainer">
+      <div id="progressBar"><div></div></div>
+      <div id="progressText">0%</div>
+    </div>
+    <div id="message"></div>
+
+    <script>
+      const form = document.getElementById("uploadForm");
+      const progressContainer = document.getElementById("progressContainer");
+      const progressBar =
+        document.getElementById("progressBar").firstElementChild;
+      const progressText = document.getElementById("progressText");
+      const message = document.getElementById("message");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const xhr = new XMLHttpRequest();
+
+        xhr.open("POST", "/upload", true);
+
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const percentComplete = Math.round(
+              (event.loaded / event.total) * 100
+            );
+            progressBar.style.width = percentComplete + "%";
+            progressText.textContent = percentComplete + "%";
+          }
+        };
+
+        xhr.onloadstart = () => {
+          progressContainer.style.display = "block";
+          message.textContent = "";
+        };
+
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            message.textContent = "File uploaded successfully!";
+            progressBar.style.width = "100%";
+            progressText.textContent = "100%";
+          } else {
+            message.textContent = "File upload failed!";
+          }
+        };
+
+        xhr.onerror = () => {
+          message.textContent = "An error occurred during the file upload.";
+        };
+
+        xhr.send(formData);
+      });
+    </script>
+  </body>
+</html>

@@ -2,9 +2,11 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const { renderQRCodeInTerminal } = require("clnk-terminal");
+const { formatIPUrl } = require("@untools/ip-url");
 
 const app = express();
-const port = 3000;
+const port = 3581;
 
 // Directory to save uploaded files
 const uploadDir = path.join(__dirname, "uploads");
@@ -46,6 +48,9 @@ app.get("/download/:filename", (req, res) => {
 app.use("/files", express.static(uploadDir));
 
 // Start the server
-app.listen(port, () => {
+app.listen(port, async () => {
+  const url = formatIPUrl(port);
   console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Network URL: ${url}`);
+  await renderQRCodeInTerminal(url);
 });

@@ -10,6 +10,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@untools/ip-url": "^0.0.2",
+    "clnk-terminal": "^0.0.1",
     "express": "^4.19.2",
     "multer": "^1.4.5-lts.1"
   }
